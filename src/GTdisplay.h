@@ -26,7 +26,7 @@
 #include <SPIFFS.h>
 #include <M5Stack.h>
 #include "Free_Fonts.h"
-#include "..\RTC.h"
+#include "RTC.h"
 #include "MP3player.h"
 #define NO_OFF_FORMATS 8
 #define NO_OFF_LINES 10

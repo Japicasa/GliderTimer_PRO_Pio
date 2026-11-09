@@ -4,8 +4,8 @@
 #include <functional>
 #include "esp_partition.h"
 #include <esp_ota_ops.h>
-#include "../keeper.h"
-#include "../DebugPrint.h"
+#include "keeper.h"
+#include "DebugPrint.h"
 #include "Timer_flight_data.h"
 // #include "Draw_list.h"
 #include "Contests.h"

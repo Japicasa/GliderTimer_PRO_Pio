@@ -1,6 +1,6 @@
+.pio/
 .vscode/*
+!.vscode/extensions.json
 desktop.ini
 build/*
 **/*.bin
-Flashutils/spiffdata.bin
-**/.vscode/

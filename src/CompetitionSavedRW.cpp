@@ -1,6 +1,6 @@
 #include "CompetitionSavedRW.h"
 #include <Arduino.h>
-#include "../DebugPrint.h"
+#include "DebugPrint.h"
 extern DebugPrint Debug;
 /**
  * Inicializa la Flash si no lo estuviera y devuelve el último vuelo o -1 en caso de error
