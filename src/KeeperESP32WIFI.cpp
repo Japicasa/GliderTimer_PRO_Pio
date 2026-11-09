@@ -372,7 +372,7 @@ void savePilots(AsyncWebServerRequest *request, uint8_t *data, size_t len, size_
 
 void wifiDisconnect()
 {
-  setCpuFrequencyMhz(80);
+  // CPU siempre a 240 MHz (board_build.f_cpu): cambiarla con WiFi activo da inestabilidades
   Debug.println("** Stopping WiFi+BT");
   WiFi.mode(WIFI_OFF);
   btStop();
@@ -426,7 +426,6 @@ bool connecttowifi()
   // Debug.println(host);
   // myudp.begin();
   // beginUdp();
-  setCpuFrequencyMhz(160);
 
   // Debug.println("Starting DNSServer");
   // dnsServer.start(53, "*", IPAddress(192, 168, 4, 1));
@@ -2044,6 +2043,9 @@ int connect_to_AP(int selection)
   // Serial.println("Connected to AP");
   if (connection_result == HOME_STA)
   {
+    // igual que en connecttowifi(): sin modem sleep, si no async_tcp
+    // se atasca sirviendo la web y salta el task watchdog
+    WiFi.setSleep(false);
     local_RTC.ConfigLocalTimeFromNTP(1);
     Debug.println("Starting WebServer");
     MDNS.begin(host);
