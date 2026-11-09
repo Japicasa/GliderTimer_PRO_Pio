@@ -1,0 +1,741 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>GliderTimer</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta charset="utf-8" />
+    <script src="jquery-3.3.1.slim.min.js"></script>
+    <script src="popper.min.js"></script>
+    <script src="bootstrap.min.js"></script>
+    <link rel="stylesheet" href="bootstrap.min.css" />
+
+    <style>
+      .gliderkeeper {
+        background-color: rgb(2, 64, 10);
+        border-color: rgb(2, 64, 10);
+        cursor: default;
+        color: white;
+        border-radius: 6px;
+        font-size: 1em;
+        overflow: hidden;
+      }
+
+      .gliderkeeper_btn {
+        border-radius: 6px;
+        font-size: 1.5em;
+      }
+
+      .dots-1 {
+        width: 50px;
+        height: 12px;
+        background: radial-gradient(circle closest-side, currentColor 90%, #0000) 0 0/33% 100% space;
+        clip-path: inset(0 100% 0 0);
+        animation: d1 1s steps(4) infinite;
+      }
+      @keyframes d1 {
+        to {
+          clip-path: inset(0 -34% 0 0);
+        }
+      }
+    </style>
+    <script src="index.js"></script>
+  </head>
+
+  <body>
+    <div class="container-fluid">
+      <nav class="navbar navbar-expand-md navbar-dark row gliderkeeper">
+        <a id="idVersion" class="navbar-brand" href="index.html"><strong>GliderTimer</strong></a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#collapsibleNavbar">
+          <span class="navbar-toggler-icon" style="color: white"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="collapsibleNavbar">
+          <ul class="navbar-nav">
+            <!-- <li class="nav-item">
+              <a class="nav-link" style="color: white; cursor: pointer" id="id_select_lnk">Select Competition</a>
+            </li> -->
+            <li class="nav-item">
+              <a class="nav-link" style="color: white; cursor: pointer" id="id_showresult_lnk">View Scores</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" style="color: white; cursor: pointer" id="id_viewPilots_lnk">View Pilots</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" style="color: white; cursor: pointer" id="id_gliderScore_lnk">GliderScore Files</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" style="color: white; cursor: pointer" id="id_system_lnk">System</a>
+            </li>
+          </ul>
+        </div>
+      </nav>
+      <!-- Espera -->
+      <div id="id_spinner" class="mt-2 alert alert-secondary fade show" role="alert" style="display: none">
+        <h4 class="alert-heading">Please Wait...</h4>
+      </div>
+
+      <!-- Área de mensajes -->
+      <div
+        id="id_alert"
+        class="mt-2 alert alert-warning alert-dismissible fade show"
+        role="alert"
+        style="display: none"
+      >
+        <h4 class="alert-heading">Notice</h4>
+        <p id="id_warnig_msg"></p>
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+          <span aria-hidden="true">Close</span>
+        </button>
+      </div>
+      <div id="idSaveSettingsOK" class="mt-1 row" style="display: none">
+        <div class="col-4 mt-3 mx-2 p-2 alert alert-success">
+          <strong><span id="idOKText">Settings Saved</span></strong>
+        </div>
+        <div class="mx-2 mt-2">
+          <a href="/"><h5>Main Menu</h5></a>
+        </div>
+      </div>
+      <div id="idSaveSettingsError" class="mt-1 row" style="display: none">
+        <div class="col-4 mt-3 mx-2 p-2 alert alert-warning">
+          <strong><span id="idFileError">Error saving settings </span></strong>
+        </div>
+        <div class="mx-2 mt-2">
+          <a href="/"><h5>Please Retry</h5></a>
+        </div>
+      </div>
+      <div id="idWaitSavingSettings" class="mt-4" style="display: none">
+        <h3>Uploading File...</h3>
+        <div class="dots-1"></div>
+      </div>
+      <div class="appScreens jumbotron jumbotron-fluid mt-2" id="id_home">
+        <div class="container">
+          <img id="id_img" class="d-block" src="TimerScreenKeeper.png" />
+          <hr class="mt-2" />
+          <p class="lead"><strong>Personal Time Keeper</strong></p>
+          <hr class="mb-5" />
+          <p>More info</p>
+          <p class="lead">
+            <a class="btn btn-primary btn-lg" target="_blank" href="https://www.gliderkeeper.com" role="button"
+              >GliderKeeper</a
+            >
+          </p>
+        </div>
+      </div>
+
+      <!-- Este area es para los resultados -->
+
+      <div class="appScreens" id="id_results_area" style="display: none">
+        <ul class="nav nav-tabs mt-3" id="myTab" role="tablist">
+          <li class="nav-item" role="presentation">
+            <button
+              class="nav-link active"
+              id="id_fullresults"
+              data-toggle="tab"
+              data-target="#id_fresults_area"
+              type="button"
+              role="tab"
+            >
+              Final Score
+            </button>
+          </li>
+          <li class="nav-item" role="presentation">
+            <button
+              class="nav-link"
+              id="id_resultsbyround"
+              data-toggle="tab"
+              data-target="#id_round_results_area"
+              type="button"
+              role="tab"
+            >
+              Score by Round
+            </button>
+          </li>
+          <li class="nav-item" role="presentation">
+            <button
+              class="nav-link"
+              id="id_resultsbypilot"
+              data-toggle="tab"
+              data-target="#id_pilots_results_area"
+              type="button"
+              role="tab"
+            >
+              Score by Pilot
+            </button>
+          </li>
+        </ul>
+        <div class="tab-content">
+          <div class="tab-pane fade show active mt-3" role="tabpanel" id="id_fresults_area">
+            <table class="table table-sm">
+              <thead class="gliderkeeper">
+                <th scope="col" style="width: 5%">Pos</th>
+                <th scope="col" style="width: 15%">Id</th>
+                <th scope="col" style="width: 30%">Piloto</th>
+                <th scope="col" style="width: 10%">FAI</th>
+                <th scope="col" style="width: 5%">R. 1</th>
+                <th scope="col" style="width: 5%">R. 2</th>
+                <th scope="col" style="width: 5%">R. 3</th>
+                <th scope="col" style="width: 5%">R. 4</th>
+                <th scope="col" style="width: 5%">R. 5</th>
+                <th scope="col" style="width: 5%">R. 6</th>
+                <th scope="col" style="width: 5%">Penal.</th>
+                <th scope="col" style="width: 5%">Disc.</th>
+              </thead>
+              <tbody id="id_result_table"></tbody>
+            </table>
+          </div>
+          <div class="tab-pane fade mt-3" role="tabpanel" id="id_round_results_area">
+            <table class="table table-sm">
+              <thead class="gliderkeeper">
+                <th scope="col" style="width: 5%">Round</th>
+                <th scope="col" style="width: 10%">Id</th>
+                <th scope="col" style="width: 25%">Pilot</th>
+                <th scope="col" style="width: 10%">F5J Height</th>
+                <th scope="col" style="width: 5%">Time</th>
+                <th scope="col" style="width: 5%">Landing</th>
+                <th scope="col" style="width: 10%">Raw Score</th>
+                <th scope="col" style="width: 10%">FAI Score</th>
+                <th scope="col" style="width: 5%">Penalty</th>
+                <th scope="col" style="width: 15%">Round Rank</th>
+              </thead>
+              <tbody id="id_round_result_table"></tbody>
+            </table>
+          </div>
+          <div class="tab-pane fade mt-3" role="tabpanel" id="id_pilots_results_area">
+            <table class="table table-sm">
+              <thead class="gliderkeeper">
+                <th scope="col" style="width: 10%">Id</th>
+                <th scope="col" style="width: 25%">Pilot</th>
+                <th scope="col" style="width: 5%">Round</th>
+                <th scope="col" style="width: 10%">F5J Height</th>
+                <th scope="col" style="width: 5%">Time</th>
+                <th scope="col" style="width: 5%">Landing</th>
+                <th scope="col" style="width: 10%">Raw Score</th>
+                <th scope="col" style="width: 10%">FAI Score</th>
+                <th scope="col" style="width: 5%">Penalty</th>
+                <th scope="col" style="width: 15%">Round Rank</th>
+              </thead>
+              <tbody id="id_pilots_result_table"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Area para mostrar los pilotos -->
+      <div class="appScreens" id="id_pilots_area" style="display: none">
+        <div>
+          <table id="id_pilots_tbl" class="table table-responsive mt-2" style="font-size: 1rem; padding-left: 1rem">
+            <thead class="thead-inverse">
+              <tr>
+                <th colspan="1" style="width: 10%">#</th>
+                <th colspan="1" style="width: 20%">Id</th>
+                <th colspan="1" style="width: 50%">Name</th>
+                <th colspan="1" style="width: 20%">Alias</th>
+              </tr>
+            </thead>
+            <tbody id="id_body_pilots"></tbody>
+          </table>
+          <div class="d-flex justify-content-around">
+            <button type="button" name="" id="id_save_pilots_btn" class="btn btn-primary w-25">Save</button>
+            <button type="button" name="" id="id_cancel_pilots_btn" class="btn btn-secondary w-25">Cancel</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Area para subir ficheros de GS a GT-->
+      <div class="appScreens" id="id_GS_files" style="display: none">
+        <h3 class="mt-2">Upload GliderScore files to GliderTimer</h3>
+
+        <div id="idGSOK" class="mt-1 row" style="display: none">
+          <button type="button" class="col-sm-12 mt-3 mx-2 p-2 btn btn-success">
+            <strong><span id="idOKText">All Files Uploaded OK</span></strong>
+          </button>
+        </div>
+        <div id="idGSError" class="mt-1 row" style="display: none">
+          <button type="button" class="col-sm-12 mt-3 mx-2 p-2 btn btn-warning">
+            <strong><span id="idFileError">Upload Error</span></strong>
+          </button>
+          <h2>Please Retry</h2>
+        </div>
+
+        <div id="idGSWait" class="mt-4" style="display: none">
+          <h3>Uploading File...</h3>
+          <div class="dots-1"></div>
+        </div>
+        <div id="upload_GS_files">
+          <form action="#">
+            <div class="form-group">
+              <label for="idPilotMasterFile">Pilot Master File</label>
+              <input type="file" class="form-control" id="idPilotMasterFile" name="PilotMasterFile" />
+            </div>
+
+            <div class="form-group">
+              <label for="idDrawTable">Draw Table</label>
+              <input type="file" class="form-control" id="idDrawTable" name="DrawTable" />
+            </div>
+            <div class="form-group">
+              <label for="idRoundsSchedule">Rounds Schedule</label>
+              <input type="file" class="form-control" id="idRoundsSchedule" name="RoundsSchedule" />
+            </div>
+            <div class="row">
+              <div class="mx-auto mt-3">
+                <input type="button" id="id_btn_send_GS_files" class="btn btn-info" value="Send Files" />
+              </div>
+            </div>
+          </form>
+          <div class="form-group">
+            <h3>Create a Schedule File</h3>
+            Use the following button to create the schedule file.<br />
+          </div>
+          <div class="row">
+            <div class="mx-auto mt-3">
+              <a href="/sched.html" id="id_btn_gen_sched" target="_blank" class="btn btn-info"
+                >Generate Schedule File</a
+              >
+            </div>
+          </div>
+
+          <div class="row" id="id_descarga_sched">
+            <div class="mx-auto mt-3">
+              <a
+                class="button btn btn-info"
+                id="id_btn_descarga_sched"
+                class="btn btn-info"
+                href="/scheduled_rounds.csv"
+              >
+                Download Schedule File
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Area para el menú sistema-->
+      <div class="appScreens" id="id_system_area" style="display: none">
+        <div id="idResultado" class="mt-4 row" style="display: none">
+          <button type="button" class="col-sm-12 mt-3 mx-2 p-2 btn btn-success"><strong>Erase OK</strong></button>
+        </div>
+
+        <div id="idWait" class="mt-4" style="display: none">
+          <h4 class="modal-title">Wait while deleting Flight Data</h4>
+          <div class="text-center">
+            <div class="loader"></div>
+          </div>
+        </div>
+
+        <div id="idErasemsg" class="mt-4" style="display: none">
+          <h4>Wait while deleting Flight Data.</h4>
+          <h4>This may take up to one minute.</h4>
+          <h4>Check device display for reset.</h4>
+        </div>
+
+        <div>
+          <div class="mt-2 row">
+            <button class="col-sm-12 mt-3 mx-2 p-2 gliderkeeper_btn" id="id_Settings_btn">
+              <strong>General Settings</strong>
+            </button>
+          </div>
+
+          <div class="mt-2 row">
+            <button class="col-sm-12 mt-3 mx-2 p-2 gliderkeeper_btn" id="id_WifiSetup_btn">
+              <strong>Wifi Setup</strong>
+            </button>
+          </div>
+
+          <div class="accordion" id="accordionExample">
+            <div class="row mt-2 mb-0">
+              <button
+                class="gliderkeeper_btn col-sm-12 mt-3 mx-2 p-2 collapsed"
+                type="button"
+                data-toggle="collapse"
+                data-target="#collapseTwo"
+              >
+                <strong>Download Competition Data</strong>
+              </button>
+            </div>
+
+            <div id="collapseTwo" class="collapse mt-2" aria-labelledby="headingTwo" data-parent="#accordionExample">
+              <div>
+                <button
+                  onclick="window.open('fresults.csv', '_blank')"
+                  class="gliderkeeper_btn col-sm-12 mt-3 mx-2 p-2 collapsed"
+                  type="button"
+                  data-toggle="collapse"
+                  data-target="#collapseTwo"
+                >
+                  <strong>Final Score</strong>
+                </button>
+                <button
+                  onclick="window.open('presults.csv', '_blank')"
+                  class="gliderkeeper_btn col-sm-12 mt-3 mx-2 p-2 collapsed"
+                  type="button"
+                  data-toggle="collapse"
+                  data-target="#collapseTwo"
+                >
+                  <strong>Score by Pilot</strong>
+                </button>
+                <button
+                  onclick="window.open('rresults.csv', '_blank')"
+                  class="gliderkeeper_btn col-sm-12 mt-3 mx-2 p-2 collapsed"
+                  type="button"
+                  data-toggle="collapse"
+                  data-target="#collapseTwo"
+                >
+                  <strong>Score by Round</strong>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div class="mt-2 row">
+            <button id="id_UpdateFirmware" class="col-sm-12 mt-3 mx-2 p-2 gliderkeeper_btn">
+              <strong>Firmware Update</strong>
+            </button>
+          </div>
+          <div class="mt-2 row">
+            <button class="col-sm-12 mt-3 mx-2 p-2 gliderkeeper_btn" id="id_UpdateUserInterface_btn">
+              <strong>User Interface Update</strong>
+            </button>
+          </div>
+        </div>
+        <div class="modal fade" id="idSure" tabindex="-1" role="dialog">
+          <div class="modal-dialog" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title">Deleting all Flight Data</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <div class="modal-body">
+                <h2>Are you sure?</h2>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-danger" data-dismiss="modal" id="idErase">Yes, I´m sure</button>
+                <button type="button" class="btn btn-success" data-dismiss="modal">No, please keep my data</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Este area es para elegir competición -->
+      <div class="appScreens" id="id_select_comp" style="display: none">
+        <div class="mt-3">
+          <div class="form-group mt-4">
+            <label class="gliderkeeper_label" for="select_competition">Select Competition </label>
+            <select class="form-control" name="select_competition" id="id_select_competition">
+              <option value="1">Competition 1</option>
+              <option value="2">Competition 2</option>
+              <option value="3">Competition 3</option>
+              <option value="4">Competition 4</option>
+              <option value="5">Competition 5</option>
+              <option value="6">Competition 6</option>
+              <option value="7">Competition 7</option>
+              <option value="8">Competition 8</option>
+              <option value="9">Competition 9</option>
+              <option value="10">Competition 10</option>
+            </select>
+            <button type="button" name="" id="id_select_competition_btn" class="btn btn-primary mt-4 btn-lg btn-block">
+              Select
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="appScreens" id="id_Wifi_Setup" style="display: none">
+        <h3 class="mt-2">WiFi Setup</h3>
+        <form id="update_wifi_frm" action="saveWifi" method="POST">
+          <div class="form-group">
+            <label for="idSSID">SSID 1</label>
+            <input type="text" class="form-control" id="idSSID" name="SSID" />
+          </div>
+          <div class="form-group">
+            <label for="idWiFiPass">WiFi Password 1</label>
+            <input type="text" class="form-control" id="idWiFiPass" name="WifiPass" />
+          </div>
+          <div class="form-group">
+            <label for="idSSID1">SSID 2</label>
+            <input type="text" class="form-control" id="idSSID1" name="SSID1" />
+          </div>
+          <div class="form-group">
+            <label for="idWiFiPass1">WiFi Password 2</label>
+            <input type="text" class="form-control" id="idWiFiPass1" name="WifiPass1" />
+          </div>
+          <!-- <div class="form-group">
+            <label id="lblTimeForConnect" for="idTimeForConnect">Connect time</label>
+            <input type="number" min="5" max="30" class="form-control" id="idTimeForConnect" name="TimeForConnect" />
+          </div> -->
+          <div class="row">
+            <div class="mx-auto mt-3">
+              <input type="submit" id="btn-save" type="button" class="btn btn-info" value="Save" />
+            </div>
+          </div>
+        </form>
+      </div>
+
+      <div class="appScreens" id="id_Settings" style="display: none">
+        <h3 class="mt-2">Settings</h3>
+        <div class="row">
+          <div class="col-xs-12 col-lg-6">
+            <fieldset>
+              <legend>Display Settings</legend>
+              <div class="col-sm-12 mt-2">
+                <input type="range" class="form-range"" id="idVolume" name="idVolume" value="6" min="1" max="6"
+                oninput="showValues()"/>
+                <label class="form-label" for="idVolume" id="idLabelVolume">Beep Volume <strong>6</strong></label>
+              </div>
+              <div class="col-sm-12 mt-2">
+                <input type="range" class="form-range"" id="idBrightness" name="idBrightness" value="250" min="50"
+                max="250" step="50" oninput="showValues()"/>
+                <label class="form-label" for="idBrightness" id="idLabelBrightness"
+                  >Brightness <strong>250</strong></label
+                >
+              </div>
+            </fieldset>
+          </div>
+
+          <div class="col-xs-12 col-lg-6">
+            <input type="hidden" class="form-range" id="idStep" name="idStep" value="0" />
+
+            <legend>Competition Settings</legend>
+            <div class="col-sm-12 mt-2">
+              <select class="form-range h5" id="idCompType" name="idCompType">
+                <option value="1">Small Competition Single GliderTimer</option>
+                <option value="2">Small Competition with GliderTimer-PRO</option>
+                <option value="3">Full Groups Competition</option>
+              </select>
+            </div>
+            <div class="col-sm-12 mt-4">
+              <div class="custom-control custom-switch">
+                <input
+                  type="checkbox"
+                  class="custom-control-input"
+                  id="idCollector"
+                  name="idCollector"
+                  value="collectorEnabled"
+                />
+                <label class="custom-control-label" for="idCollector">Collector Mode Enabled</label>
+              </div>
+            </div>
+            <div class="col-sm-12 mt-2">
+              <div class="custom-control custom-switch">
+                <input
+                  type="checkbox"
+                  class="custom-control-input"
+                  id="idStrictLandTiming"
+                  name="idStrictLandTiming"
+                  value="StrictModelEnabled"
+                />
+                <label class="custom-control-label" for="idStrictLandTiming">Strict Landing/Launch Timing</label>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="row mt-5">
+          <div class="col-xs-12 col-lg-6">
+            <fieldset>
+              <legend>Volume Settings</legend>
+              <div class="col-sm-12 mt-2">
+                <input type="range" class="form-range"" id="idBackgroundVolume" name="idBackgroundVolume" value="20"
+                min="1" max="20" oninput="showValues()"/>
+                <label class="form-label" for="idBackgroundVolume" id="idLabelBackgroundVolume"
+                  >Background Volume <strong>20</strong></label
+                >
+              </div>
+              <div class="col-sm-12 mt-2">
+                <input type="range" class="form-range"" id="idAnnouncementVolume" name="idAnnouncementVolume" value="30"
+                min="10" max="30" oninput="showValues()"/>
+                <label class="form-label" for="idAnnouncementVolume" id="idLabelAnnouncementVolume"
+                  >Announcement Volume <strong>30</strong></label
+                >
+              </div>
+            </fieldset>
+          </div>
+          <div class="col-xs-12 col-lg-6">
+            <fieldset>
+              <legend>Panel Settings</legend>
+              <div class="col-sm-12 mt-2">
+                <select class="form-range" id="idPanelType" name="idPanelType">
+                  <option value="0">No Panel</option>
+                  <option value="1">I2C Panel</option>
+                  <option value="2">Standard Serial Interface</option>
+                  <option value="3">Extended Serial Interface</option>
+                  <option value="4">USB Host</option>
+                </select>
+              </div>
+              <div class="col-sm-12 mt-3">
+                <input
+                  type="range"
+                  class="form-range"
+                  id="idBaud"
+                  name="idBaud"
+                  value="9600"
+                  min="9600"
+                  max="19200"
+                  step="9600"
+                  oninput="showValues()"
+                />
+                <label class="form-label" for="idStep" id="idLabelBaud">BaudRate <strong>9600</strong></label>
+              </div>
+            </fieldset>
+          </div>
+        </div>
+        <div class="row">
+          <div class="mx-auto mt-3">
+            <button onclick="sendSettings()" id="btn-save" type="button" class="btn btn-info">Save</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="appScreens" id="id_Update_Firmware" style="display: none">
+        <div id="idFWOK" class="mt-4 row" style="display: none">
+          <button type="button" class="col-sm-12 mt-3 mx-2 p-2 btn btn-success">
+            <strong>Firmware Update OK</strong>
+          </button>
+        </div>
+        <div id="idFWError" class="mt-4 row" style="display: none">
+          <button type="button" class="col-sm-12 mt-3 mx-2 p-2 btn btn-warning">
+            <strong>Firmware Update Error</strong>
+          </button>
+          <h2>Please Retry</h2>
+        </div>
+
+        <div id="idFWWait" class="mt-4" style="display: none">
+          <h3>Updating Fw...</h3>
+          <div class="progress">
+            <div
+              class="progress-bar progress-bar-striped bg-success"
+              role="progressbar"
+              style="width: 0%"
+              id="idFWProgress"
+            ></div>
+          </div>
+          <p>Check device display</p>
+        </div>
+        <div id="idFWForm">
+          <h3 class="mt-2">Firmware Update</h3>
+          <!-- <form enctype="multipart/form-data" method="POST"> -->
+          <div class="form-group">
+            <div class="custom-file mb-3">
+              <input type="file" class="custom-file-input" id="idFWFile" name="update" />
+              <label class="custom-file-label" for="idFWFile">Select Firmware file</label>
+            </div>
+            <p class="mt-1">File should be Timer_Fw_STD_x.xx.bin or GT_Fw_mini_x.xx.bin GK_Fw_FAI_S_x.xx.bin format</p>
+          </div>
+          <div class="row">
+            <div class="mx-auto mt-3">
+              <input type="submit" id="update-firmware-btn-save" type="button" class="btn btn-info" value="Update" />
+            </div>
+          </div>
+          <!-- </form> -->
+        </div>
+      </div>
+
+      <div class="appScreens" id="id_Update_UI" style="display: none">
+        <div id="idUIOK" class="mt-4 row" style="display: none">
+          <button type="button" class="col-sm-12 mt-3 mx-2 p-2 btn btn-success">
+            <strong>User Interface Update OK</strong>
+          </button>
+        </div>
+        <div id="idUIError" class="mt-4 row" style="display: none">
+          <button type="button" class="col-sm-12 mt-3 mx-2 p-2 btn btn-warning">
+            <strong>User Interface Update Error</strong>
+          </button>
+          <h2>Please Retry</h2>
+        </div>
+
+        <div id="idUIWait" class="mt-4" style="display: none">
+          <h3>Updating UI...</h3>
+          <div class="progress">
+            <div
+              class="progress-bar progress-bar-striped bg-success"
+              role="progressbar"
+              style="width: 0%"
+              id="idUIProgress"
+            ></div>
+          </div>
+          <p>Check device display</p>
+        </div>
+
+        <div id="idUIForm">
+          <h3 class="mt-2">User Interface Update</h3>
+          <!-- <form action="updateSpiff" enctype='multipart/form-data' method='POST'> -->
+          <div class="form-group">
+            <div class="form-group">
+              <div class="custom-file mb-1">
+                <input type="file" class="custom-file-input" id="idUIFile" name="update" />
+                <label class="custom-file-label" for="idUIFile">Select User Interface file</label>
+              </div>
+            </div>
+            <p>File should be Timer_UI_mini_x.xx.bin format</p>
+            <div class="row">
+              <div class="mx-auto mt-3">
+                <input type="submit" id="update-ui-btn-save" type="button" class="btn btn-info" value="Update" />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+  <!-- <script type="module" src="index.js"></script> -->
+  <script>
+    // function showValues() {
+    //   let volume = document.getElementById("idVolume").value;
+    //   let brightness = document.getElementById("idBrightness").value;
+    //   let step = document.getElementById("idStep").value;
+    //   let baud = document.getElementById("idBaud").value;
+    //   let announcementVolume = document.getElementById("idAnnouncementVolume").value;
+    //   let backgroundVolume = document.getElementById("idBackgroundVolume").value;
+
+    //   document.getElementById("idLabelVolume").innerHTML = `Beep Volume <strong>${volume}</strong>`;
+    //   document.getElementById("idLabelBrightness").innerHTML = `Brightness <strong>${brightness}</strong>`;
+    //   document.getElementById("idLabelStep").innerHTML = `Competition Steps <strong>${step}</strong>`;
+    //   document.getElementById("idLabelBaud").innerHTML = `Baud Rate <strong>${baud}</strong>`;
+    //   document.getElementById(
+    //     "idLabelAnnouncementVolume"
+    //   ).innerHTML = `Announcement Volume <strong>${announcementVolume}</strong>`;
+    //   document.getElementById(
+    //     "idLabelBackgroundVolume"
+    //   ).innerHTML = `Background Volume <strong>${backgroundVolume}</strong>`;
+    // }
+
+    // function sendSettings() {
+    //   document.getElementById("idWaitSavingSettings").style.display = "block";
+    //   document.getElementById("id_Settings").style.display = "none";
+
+    //   let settings = "volume=" + document.getElementById("idVolume").value + "\n";
+    //   settings += "brightness=" + document.getElementById("idBrightness").value + "\n";
+    //   settings += "collector=" + (document.getElementById("idCollector").checked ? "1" : "0") + "\n";
+    //   settings += "groups=" + (document.getElementById("idGroups").checked ? "1" : "0") + "\n";
+    //   settings += "scheduled=" + (document.getElementById("idScheduled").checked ? "1" : "0") + "\n";
+    //   settings += "panel_type=" + document.getElementById("idPanelType").value + "\n";
+    //   settings += "baud_rate1=" + document.getElementById("idBaud").value + "\n";
+    //   settings += "comp_step=" + document.getElementById("idStep").value + "\n";
+    //   settings += "background_volume=" + document.getElementById("idBackgroundVolume").value + "\n";
+    //   settings += "announcement_volume=" + document.getElementById("idAnnouncementVolume").value + "\n";
+
+    //   let formData = new FormData();
+    //   let settingsBlob = new Blob([settings], { type: "text/plain" });
+    //   formData.append("settings.txt", settingsBlob, "settings.txt");
+    //   fetch("/uploader", {
+    //     // Your POST endpoint
+    //     method: "POST",
+    //     body: formData, // This is your file object
+    //   })
+    //     .then((response) => {
+    //       if (response.status == 200) {
+    //         document.getElementById("idWaitSavingSettings").style.display = "none";
+    //         document.getElementById("idSaveSettingsOK").style.display = "block";
+    //       } else {
+    //         document.getElementById("idWaitSavingSettings").style.display = "none";
+    //         document.getElementById("idSaveSettingsError").style.display = "block";
+    //       }
+    //     })
+    //     .catch((response) => {
+    //       document.getElementById("idWaitSavingSettings").style.display = "none";
+    //       document.getElementById("idSaveSettingsError").style.display = "block";
+    //     });
+    // }
+  </script>
+</html>

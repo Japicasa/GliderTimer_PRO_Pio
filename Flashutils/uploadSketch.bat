@@ -1,0 +1,7 @@
+
+C:\arduino-1.8.9\portable\packages\esp32\tools\esptool_py\2.6.1/esptool.exe --chip esp32  --baud 921600 --before default_reset ^
+    --after hard_reset write_flash -z --flash_mode dio --flash_freq 80m --flash_size detect ^
+    0xe000 C:\arduino-1.8.9\portable\packages\esp32\hardware\esp32\1.0.4/tools/partitions/boot_app0.bin ^
+    0x1000 C:\arduino-1.8.9\portable\packages\esp32\hardware\esp32\1.0.4/tools/sdk/bin/bootloader_qio_80m.bin ^
+    0x10000 C:\buildM5/GliderTimer.ino.bin ^
+    0x8000 C:\buildM5/GliderTimer.ino.partitions.bin 

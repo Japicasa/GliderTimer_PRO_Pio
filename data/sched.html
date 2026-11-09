@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>GliderTimer</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta charset="utf-8" />
+    <script src="jquery-3.3.1.slim.min.js"></script>
+    <script src="popper.min.js"></script>
+    <script src="bootstrap.min.js"></script>
+    <link rel="stylesheet" href="bootstrap.min.css" />
+
+    <style>
+      .gliderkeeper {
+        background-color: rgb(2, 64, 10);
+        border-color: rgb(2, 64, 10);
+        cursor: default;
+        color: white;
+        border-radius: 6px;
+        font-size: 2em;
+        overflow: hidden;
+      }
+
+      .gliderkeeper_btn {
+        border-radius: 6px;
+        font-size: 1.5em;
+      }
+
+      .dots-1 {
+        width: 50px;
+        height: 12px;
+        background: radial-gradient(circle closest-side, currentColor 90%, #0000) 0 0/33% 100% space;
+        clip-path: inset(0 100% 0 0);
+        animation: d1 1s steps(4) infinite;
+      }
+      @keyframes d1 {
+        to {
+          clip-path: inset(0 -34% 0 0);
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="container-fluid">
+      <nav class="navbar navbar-expand-md navbar-dark row gliderkeeper">
+        <a class="navbar-brand" href="index.html"><strong>GliderTimer</strong></a>
+      </nav>
+
+      <!-- Msg area -->
+      <div class="appScreens">
+        <div id="idSchedOK" class="mt-1 row" style="display: none">
+          <div class="col-4 mt-3 mx-2 p-2 alert alert-success">
+            <strong><span id="idOKText">Schedule created and uploaded OK</span></strong>
+          </div>
+          <div class="mx-2 mt-2">
+            <a href="/"><h5>Main Menu</h5></a>
+          </div>
+        </div>
+        <div id="idSchedError" class="mt-1 row" style="display: none">
+          <div class="col-4 mt-3 mx-2 p-2 alert alert-warning">
+            <strong><span id="idFileError">Error creating schedule </span></strong>
+          </div>
+          <div class="mx-2 mt-2">
+            <a href="/sched.html"><h5>Please Retry</h5></a>
+          </div>
+        </div>
+        <div id="idWait" class="mt-4" style="display: none">
+          <h3>Uploading File...</h3>
+          <div class="dots-1"></div>
+        </div>
+      </div>
+
+      <!-- Area para subir ficheros de GS a GT-->
+      <div class="appScreens" id="idSchedFiles" style="display: block">
+        <div id="upload_GS_files">
+          <form action="#" id="idFormulario" onsubmit="generatecsv(event)">
+            <input type="hidden" id="idComp" />
+            <div class="form-group">
+              <h3>Create a Schedule File</h3>
+              Use next input to plan the schedule file.<br />
+              This action will output a file named <strong>scheduled_rounds.csv</strong> that must be uploaded to other
+              GliderTimer units
+            </div>
+            <div class="row">
+              <div class="form-group col-sm-2">
+                <label for="idRounds"># Rounds</label>
+                <input readonly type="number" class="form-control" id="idRounds" />
+              </div>
+              <div class="form-group col-sm-2">
+                <label for="idGroups">Grps/Rnd</label>
+                <input readonly type="number" class="form-control" id="idGroups" />
+              </div>
+              <div class="form-group col-sm-2">
+                <label for="idTotalPilots">Total Pilots</label>
+                <input readonly type="number" class="form-control" id="idTotalPilots" />
+              </div>
+            </div>
+            <div class="row">
+              <div class="form-group col-sm-6 col-md-3">
+                <label for="idFecha">Start Date</label>
+                <input required type="date" class="form-control" id="idFecha" />
+              </div>
+              <div class="form-group col-sm-6 col-md-3">
+                <label for="idHora">Start Time</label>
+                <input required type="time" class="form-control" id="idHora" />
+              </div>
+            </div>
+            <div class="row">
+              <div class="form-group col-sm-2">
+                <label for="idNextRound">Next Round</label>
+                <input required type="number" class="form-control" id="idNextRound" />
+              </div>
+              <div class="form-group col-sm-2">
+                <label for="idNextGroup">Next Group</label>
+                <input required type="number" class="form-control" id="idNextGroup" />
+              </div>
+              <div class="form-group col-sm-2">
+                <label for="idFinalRound">Final Round</label>
+                <input required type="number" class="form-control" id="idFinalRound" />
+              </div>
+              <div class="form-group col-sm-2">
+                <label for="idFinalGroup">Final Group</label>
+                <input required type="number" class="form-control" id="idFinalGroup" />
+              </div>
+            </div>
+            <div class="form-group mt-3">
+              <h6>All times must be specified in seconds</h6>
+            </div>
+            <div class="row">
+              <div class="form-group col-sm-2">
+                <label for="idDuration">Duration</label>
+                <input type="dtime" class="form-control" id="idDuration" value="600" />
+              </div>
+              <div class="form-group col-sm-4 col-md-3 col-lg-2">
+                <label for="idPrepTime">Preparation Time</label>
+                <input
+                  type="number"
+                  class="form-control"
+                  id="idPrepTime"
+                  value="300"
+                  min="200"
+                  onchange="validateNumber()"
+                />
+              </div>
+              <div class="form-group col-sm-4 col-md-3 col-lg-2">
+                <label for="idAddTime">Additional Time</label>
+                <input type="number" class="form-control" id="idAddTime" value="60" min="30" />
+              </div>
+            </div>
+            <span class="form-group">
+              <input
+                type="submit"
+                id="id_btn_gen_sched"
+                class="col-12 col-sm-8 col-md-5 btn btn-info"
+                value="Generate and Upload Schedule File"
+              />
+            </span>
+          </form>
+        </div>
+      </div>
+    </div>
+    <div id="resultado"></div>
+    <script>
+      window.onload = function () {
+        let hoy = new Date();
+        hoy = new Date(+hoy + 15 * 60 * 1000);
+        // hoy.setMinutes( + 15); // Add 15 minutes to now
+        let hora = ("00" + hoy.getHours()).slice(-2) + ":" + ("00" + hoy.getMinutes()).slice(-2);
+        hoy = hoy.toISOString().substr(0, 10);
+        document.getElementById("idFecha").value = hoy;
+        document.getElementById("idHora").value = hora;
+        fetch("/draw_table.csv")
+          .then((resp) => resp.text())
+          .then((csv) => csv2Array(csv));
+      };
+
+      function generatecsv(evt) {
+        evt.preventDefault();
+        // if (document.getElementById("idFormulario").checkValidity()) return false;
+        let csv =
+          "seq_number;Comp_numberNo;round;group;launch_time.tv_sec;duration;tm_sec;tm_min;tm_hour;tm_mday;tm_mon;tm_year\n";
+        let fecha = document.getElementById("idFecha").value;
+        let hora = document.getElementById("idHora").value;
+        let fechaComienzo = new Date(fecha + " " + hora);
+        let nextRound = parseInt(document.getElementById("idNextRound").value);
+        let nextGrp = parseInt(document.getElementById("idNextGroup").value);
+        let maxRnd = parseInt(document.getElementById("idRounds").value);
+        let maxGrp = parseInt(document.getElementById("idGroups").value);
+        let finalRnd = parseInt(document.getElementById("idFinalRound").value);
+        let finalGrp = parseInt(document.getElementById("idFinalGroup").value);
+        let compNumber = parseInt(document.getElementById("idComp").value);
+        let duration = parseInt(document.getElementById("idDuration").value);
+        let addtime =
+          duration +
+          parseInt(document.getElementById("idAddTime").value) +
+          parseInt(document.getElementById("idPrepTime").value) +
+          20; // 20 segundos de porque yo lo valgo
+        for (let r = nextRound; r <= finalRnd; r++) {
+          grp = 1;
+          rnd = maxGrp;
+
+          if (r == nextRound) { // if we ahre on the first round, then whe estart with next group
+            grp = nextGrp;
+          }
+
+          if (r == finalRnd) { // if we are on the last round, we must loop until final group
+            rnd = finalGrp;
+          }
+
+          for (let g = grp; g <= rnd; g++) {
+            tv = Math.floor(fechaComienzo.getTime() / 1000);
+            sec = fechaComienzo.getUTCSeconds();
+            min = fechaComienzo.getUTCMinutes();
+            hour = fechaComienzo.getUTCHours();
+            day = fechaComienzo.getUTCDate();
+            month = fechaComienzo.getUTCMonth();
+            year = fechaComienzo.getUTCFullYear();
+            let seq = (r - 1) * maxGrp + g;
+            csv += `${seq};${compNumber};${r};${g};${tv};${duration};${sec};${min};${hour};${day};${month};${year}\n`;
+            fechaComienzo = new Date(+fechaComienzo + addtime * 1000);
+          }
+        }
+        // document.getElementById("resultado").innerHTML = csv.replace(/\n/g,'<br>');
+        document.getElementById("idWait").style.display = "block";
+        document.getElementById("idSchedFiles").style.display = "none";
+        let formData = new FormData();
+        let csvBlob = new Blob([csv], { type: "text/csv" });
+        formData.append("RoundsSchedule", csvBlob, "scheduled_rounds.csv");
+        fetch("/uploader", {
+          // Your POST endpoint
+          method: "POST",
+          body: formData, // This is your file object
+        })
+          .then((response) => {
+            if (response.status == 200) {
+              document.getElementById("idWait").style.display = "none";
+              document.getElementById("idSchedOK").style.display = "block";
+            } else {
+              document.getElementById("idWait").style.display = "none";
+              document.getElementById("idSchedError").style.display = "block";
+            }
+          })
+          .catch((response) => {
+            document.getElementById("idWait").style.display = "none";
+            document.getElementById("idSchedError").style.display = "block";
+          });
+      }
+
+      function csv2Array(str) {
+        const headers = str.slice(0, str.indexOf("\n")).split(";");
+        const rows = str.slice(str.indexOf("\n") + 1).split("\n");
+        let maxgrp = 0;
+        let maxrnd = 0;
+        let totalplts = 0;
+        let compNumber = rows[0].split(";")[0];
+
+        rows.forEach((element) => {
+          row = element.split(";");
+          if (parseInt(row[2])==1)
+            totalplts++;
+          maxrnd = maxrnd < parseInt(row[2]) ? parseInt(row[2]) : maxrnd;
+          maxgrp = maxgrp < parseInt(row[3]) ? parseInt(row[3]) : maxgrp;
+        });
+        document.getElementById("idRounds").value = maxrnd;
+        document.getElementById("idGroups").value = maxgrp;
+        document.getElementById("idComp").value = compNumber;
+        document.getElementById("idFinalRound").value = maxrnd;
+        document.getElementById("idFinalGroup").value = maxgrp;
+        document.getElementById("idTotalPilots").value = totalplts;
+      }
+    </script>
+  </body>
+</html>

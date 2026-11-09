@@ -1,0 +1,1 @@
+esptool --baud 921600 read_flash  0x3C0000 0x040000 keeperPart_r.bin

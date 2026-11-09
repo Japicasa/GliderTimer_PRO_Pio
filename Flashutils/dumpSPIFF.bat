@@ -1,0 +1,1 @@
+esptool --baud 921600 read_flash  0xD90000 0x270000 SPIFFPart.bin

@@ -1,0 +1,1 @@
+esptool.py  --chip esp32  --baud 921600 --before default_reset --after hard_reset    write_flash -z 0xe000 boot_app0.bin 0x1000 bootloader_qio_80m.bin 0x10000 c:/buildM5/GliderTimer.ino.bin 0x8000 c:/buildM5/GliderTimer.ino.partitions.bin 0xD90000 spiffdata.bin

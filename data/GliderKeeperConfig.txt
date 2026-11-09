@@ -1,0 +1,25 @@
+WiFiSSID:GliderKeeper
+WifiPass:123456789
+Training:y
+FAImode:n
+EmergencyMotorEnable:y
+AltitudeSwitch:n
+AltitudeTrigger:200
+TimeSwitch:n
+TimeTrigger:20
+GliderLink:n
+ShowFlightOLED:y
+AlwaysOn:n
+MotorLogging:y
+AltitudeLogging:n
+AtitudeLoggingSetting:5
+GKOrientation:flat
+QRreader:readqr.gliderlink.net
+WiFiSSID1:GliderKeeper
+WifiPass1:123456789
+TimeForConnect:10
+MillisForReconect:500
+jerk_thr:300
+gzsm_thr:15
+landing_pressure_thr:100
+KeepAtEnd: DONTDELETE

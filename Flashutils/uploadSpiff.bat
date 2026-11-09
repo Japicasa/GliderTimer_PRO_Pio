@@ -1,0 +1,2 @@
+.\mkspiffs.exe -c ..\data\ -s 0x110000 -p 256 -b 4096 spiffdata4M.bin
+esptool  --chip esp32  --baud 921600 --before default_reset --after hard_reset --port COM3  write_flash -z  0x2B0000 spiffdata4M.bin

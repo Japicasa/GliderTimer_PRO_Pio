@@ -1,0 +1,1 @@
+esptool erase_region  0x290000 0xB00000

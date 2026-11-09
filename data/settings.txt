@@ -1,0 +1,11 @@
+volume=6
+brightness=250
+collector=0
+groups=1
+scheduled=1
+panel_type=3
+baud_rate=19200
+comp_step=0
+background_volume=18
+announcement_volume=30
+strict_timing=1

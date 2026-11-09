@@ -1,0 +1,6 @@
+.vscode/*
+desktop.ini
+build/*
+**/*.bin
+Flashutils/spiffdata.bin
+**/.vscode/
