@@ -51,7 +51,9 @@ Main objects (globals in `main.cpp`): `GT` (GTimer: menus, competition results),
 
 ## SPIFFS data
 
-[data/](data/) holds the web UI (HTML/JS, gzipped bootstrap/jquery), `GliderKeeperConfig.txt`, `settings.txt`, pilot/draw CSVs and `version.txt`. Upload with `pio run -t uploadfs`.
+[data/](data/) holds the web UI (`index.html`/`index.js`, `sched.html`), `GliderKeeperConfig.txt`, `settings.txt`, pilot/draw CSVs and `version.txt`. Upload with `pio run -t uploadfs`. This overwrites the whole SPIFFS, including the settings and WiFi config on the device.
+
+The UI has no Bootstrap or jQuery. `gk.css` is a hand-picked subset of Bootstrap 4.3 classes; if markup starts using a new Bootstrap class, add it there. The collapse, tab and alert-dismiss behaviour (`data-toggle` / `data-dismiss`) is a small vanilla-JS click handler in `index.js`. `MainMenu.*` and `CompMenu.*` are legacy pages that load Bootstrap from a CDN and are not linked from `index.html`.
 
 ## Flashutils
 
