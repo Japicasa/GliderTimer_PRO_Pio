@@ -23,9 +23,10 @@ void M5Stack::begin(bool LCDEnable, bool SDEnable, bool SerialEnable, bool I2CEn
   }
 
   // TF Card
-  if (SDEnable == true) {
-    SD.begin(TFCARD_CS_PIN, SPI, 40000000);
-  }
+  // GliderTimer: SD no se usa (M5.begin con SDEnable=false); quitado para no enlazar SD/FATFS
+  // if (SDEnable == true) {
+  //   SD.begin(TFCARD_CS_PIN, SPI, 40000000);
+  // }
 
   // LCD INIT
   if (LCDEnable == true) {
