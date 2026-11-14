@@ -22,11 +22,29 @@ window.onload = function () {
   document.getElementById("id_UpdateUserInterface_btn").addEventListener("click", handleUpdateUI);
   document.getElementById("id_btn_send_GS_files").addEventListener("click", handleSendGSFiles);
   document.getElementById("id_btn_gen_sched").addEventListener("click", handleGenerateScheduleFile);
-  // getUiVersion(); 
+  // getUiVersion();
   getFwVersion(); // Get Fw version data
- 
+
   showWait(false);
 };
+
+// Replacement for bootstrap.js: data-toggle="collapse" / "tab" and data-dismiss="alert"
+document.addEventListener("click", function (e) {
+  const el = e.target.closest("[data-toggle],[data-dismiss]");
+  if (!el) return;
+  if (el.dataset.toggle == "collapse") {
+    document.querySelector(el.dataset.target).classList.toggle("show");
+  } else if (el.dataset.toggle == "tab") {
+    el.closest(".nav").querySelectorAll(".nav-link").forEach((link) => link.classList.remove("active"));
+    el.classList.add("active");
+    const pane = document.querySelector(el.dataset.target);
+    pane.parentElement.querySelectorAll(".tab-pane").forEach((p) => p.classList.remove("active", "show"));
+    pane.classList.add("active", "show");
+  } else if (el.dataset.dismiss) {
+    const box = el.closest("." + el.dataset.dismiss);
+    if (box) box.style.display = "none";
+  }
+});
 
 function getUiVersion() {
   xmlhttpui.onreadystatechange = setUiVersion;
@@ -439,35 +457,35 @@ function showWifiSetup(config) {
 function showUpdateFirmwareSection() {
   showWait(false);
   document.getElementById("id_Update_Firmware").style.display = "block";
-  $("#update-firmware-btn-save").prop("disabled", true);
-  $(".custom-file-input").on("change", function () {
-    var fileName = $(this).val().split("\\").pop();
-    if (fileName.match(/(Timer|GT)(_Fw_(STD|mini|PRO))_[0-9]?[0-9].[0-9][0-9]\.bin/gm)) {
-      $(this).siblings(".custom-file-label").removeClass("text-danger").addClass("text-success").html(fileName);
-      $("#update-firmware-btn-save").prop("disabled", false);
-    } else {
-      $(this).siblings(".custom-file-label").addClass("text-danger").removeClass("text-success").html("Filename Error");
-      $("#update-firmware-btn-save").prop("disabled", true);
-    }
-  });
-  document.getElementById("update-firmware-btn-save").addEventListener("click", () => sendFile("FW"));
+  checkFileName("idFWFile", "update-firmware-btn-save", /(Timer|GT)(_Fw_(STD|mini|PRO))_[0-9]?[0-9].[0-9][0-9]\.bin/);
+  document.getElementById("update-firmware-btn-save").onclick = () => sendFile("FW");
 }
 
 function showUpdateUISection() {
   showWait(false);
   document.getElementById("id_Update_UI").style.display = "block";
-  $("#update-ui-btn-save").prop("disabled", true);
-  $(".custom-file-input").on("change", function () {
-    var fileName = $(this).val().split("\\").pop();
-    if (fileName.match(/(Timer|GT)(_UI_(mini|PRO))_[0-9]?[0-9].[0-9][0-9]\.bin/gm)) {
-      $(this).siblings(".custom-file-label").removeClass("text-danger").addClass("text-success").html(fileName);
-      $("#update-ui-btn-save").prop("disabled", false);
-    } else {
-      $(this).siblings(".custom-file-label").addClass("text-danger").removeClass("text-success").html("Filename Error");
-      $("#update-ui-btn-save").prop("disabled", true);
-    }
-  });
-  document.getElementById("update-ui-btn-save").addEventListener("click", () => sendFile("UI"));
+  checkFileName("idUIFile", "update-ui-btn-save", /(Timer|GT)(_UI_(mini|PRO))_[0-9]?[0-9].[0-9][0-9]\.bin/);
+  document.getElementById("update-ui-btn-save").onclick = () => sendFile("UI");
+}
+
+/**
+ * Enables the update button only when the selected file name matches the pattern
+ * @param {string} inputId file input
+ * @param {string} btnId update button
+ * @param {RegExp} pattern valid file name
+ */
+function checkFileName(inputId, btnId, pattern) {
+  const btn = document.getElementById(btnId);
+  btn.disabled = true;
+  document.getElementById(inputId).onchange = function () {
+    const fileName = this.value.split("\\").pop();
+    const ok = pattern.test(fileName);
+    const label = this.nextElementSibling; // .custom-file-label
+    label.innerHTML = ok ? fileName : "Filename Error";
+    label.classList.toggle("text-success", ok);
+    label.classList.toggle("text-danger", !ok);
+    btn.disabled = !ok;
+  };
 }
 
 function sendFile(fileType) {
