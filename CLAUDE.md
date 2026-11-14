@@ -19,9 +19,10 @@ pio run -t uploadfs     # upload data/ to SPIFFS
 pio device monitor      # serial 115200
 ```
 
-- **Core: `espressif32@1.12.4` = arduino-esp32 1.0.4.** That is the core the Arduino IDE builds used (see `C:\buildM5`). Do NOT upgrade to 2.x: with core 2.0.9 the image is ~1.41 MB and does not fit the 0x150000 app partition (with 1.0.4 it is ~1.36 MB, 98.9%). Flash usage is tight; watch it on every change.
+- **Core: `espressif32@1.12.4` = arduino-esp32 1.0.4.** That is the core the Arduino IDE builds used (see `C:\buildM5`). Do NOT upgrade to 2.x: with core 2.0.9 the image is ~1.41 MB and does not fit the 0x150000 app partition (with 1.0.4 it is ~1.32 MB, 96.0%, after stripping unused M5Stack modules). Flash usage is tight; watch it on every change.
 - Partitions: [Flashutils/timer4M.csv](Flashutils/timer4M.csv) (nvs, otadata, app0/app1 0x150000, spiffs 0x110000, `keeper` data partition subtype 99 at 0x3C0000).
 - Board `esp32dev`, 4MB, QIO 80 MHz, CPU 240 MHz, `CORE_DEBUG_LEVEL=0`.
+- **CPU stays at 240 MHz at all times.** Do not call `setCpuFrequencyMhz()`: changing the frequency with WiFi running causes instability. In STA mode, 80 MHz plus modem sleep caused the `async_tcp` task watchdog to reset the ESP when the web UI was opened. Both the STA and AP paths call `WiFi.setSleep(false)`.
 
 ## Libraries
 
@@ -29,7 +30,7 @@ Vendored in [lib/](lib/), copied from the Arduino sketchbook (`C:\arduino-1.8.9v
 
 | Library | Version | Notes |
 |---|---|---|
-| M5Stack | 0.3.1 | |
+| M5Stack | 0.3.1 | Trimmed (~41 KB saved). In `utility/In_eSPI_Setup.h` only `LOAD_GLCD`, `LOAD_FONT7` and `LOAD_GFXFF` are enabled; fonts 2/4/6/8 and `SMOOTH_FONT` are off. `SD.begin()` is commented out in `M5Stack::begin()`. Re-enable a font there if code starts using it |
 | ESPAsyncWebServer | 1.2.3 | me-no-dev master `f71e3d4` (from `ESPAsyncWebServer-master.zip`), NOT the wi-se-patches fork. `dependencies` removed from its `library.json` so PIO does not pull another AsyncTCP |
 | AsyncTCP | 1.1.4 | |
 | DFRobotDFPlayerMini | 1.0.2 | |
